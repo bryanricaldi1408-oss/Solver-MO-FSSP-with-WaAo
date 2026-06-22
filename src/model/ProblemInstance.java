@@ -7,56 +7,57 @@ public class ProblemInstance{
     private final int numJobs;
     private final int numMachines;
     private final int[][] processingTimes;
-    private final int[] dueDates;
 
-    public ProblemInstance(int numJobs, int numMachines, int[][] processingTimes, int[] dueDates){
+    public ProblemInstance(int numJobs, int numMachines, int[][] processingTimes){
         this.numJobs = numJobs;
         this.numMachines = numMachines;
         this.processingTimes = processingTimes;
-        this.dueDates = dueDates;
     }
 
     public static List<ProblemInstance> loadInstanceFromFile(String filePath){
+        System.out.println("Memuat file benchmark Taillard: " + filePath);
         List<ProblemInstance> instances = new ArrayList<>();
 
         try (Scanner sc = new Scanner(new File(filePath))) {
-            if (!sc.hasNextInt()) {
-                return instances; // Mengembalikan list kosong jika file kosong
-            }
-            
-            // Baris pertama: Total seluruh test case dalam file
-            int totalTestCases = sc.nextInt();
-            
-            for (int t = 0; t < totalTestCases; t++) {
-                // 1. Baca jumlah job dan mesin
-                int numJobs = sc.nextInt();
-                int numMachines = sc.nextInt();
-                
-                // 2. Baca matriks 2D untuk Processing Time (m x n)
-                int[][] processingTimes = new int[numJobs][numMachines];
-                for (int i = 0; i < numJobs; i++) {
-                    for (int j = 0; j < numMachines; j++) {
-                        processingTimes[i][j] = sc.nextInt();
+            while (sc.hasNext()) {
+                String token = sc.next();
+                if (token.equals("number")) {
+                    sc.nextLine(); // consume the rest of the text "of jobs, number of machines..."
+                    
+                    int numJobs = sc.nextInt();
+                    int numMachines = sc.nextInt();
+                    int seed = sc.nextInt();
+                    int upperBound = sc.nextInt();
+                    int lowerBound = sc.nextInt();
+                    
+                    sc.next(); // "processing"
+                    sc.next(); // "times"
+                    sc.next(); // ":"
+                    
+                    // Taillard format: numMachines rows, numJobs columns
+                    int[][] processingTimes = new int[numJobs][numMachines];
+                    for (int m = 0; m < numMachines; m++) {
+                        for (int j = 0; j < numJobs; j++) {
+                            processingTimes[j][m] = sc.nextInt();
+                        }
                     }
+                     
+                    ProblemInstance instance = new ProblemInstance(numJobs, numMachines, processingTimes);
+                    instances.add(instance);
                 }
-                
-                // 3. Baca array 1D untuk Due Dates (m elemen)
-                int[] dueDates = new int[numJobs];
-                for (int i = 0; i < numJobs; i++) {
-                    dueDates[i] = sc.nextInt();
-                }
-                
-                // 4. Bungkus ke dalam objek ProblemInstance dan masukkan ke list
-                ProblemInstance instance = new ProblemInstance(numJobs, numMachines, processingTimes, dueDates);
-                instances.add(instance);
             }
-            
         } catch (FileNotFoundException e) {
             System.err.println("Gagal membaca file. Pastikan lokasi file benar: " + filePath);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Terjadi kesalahan saat parsing file format Taillard: " + e.getMessage());
             e.printStackTrace();
         }
         
         return instances;
     }
          
+    public int getNumJobs() { return numJobs; }
+    public int getNumMachines() { return numMachines; }
+    public int[][] getProcessingTimes() { return processingTimes; }
 }
