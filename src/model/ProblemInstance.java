@@ -1,12 +1,14 @@
 package model;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class ProblemInstance{
     private final int numJobs;
     private final int numMachines;
     private final int[][] processingTimes;
+    private int lowerBound;
+    private int upperBound;
 
     public ProblemInstance(int numJobs, int numMachines, int[][] processingTimes){
         this.numJobs = numJobs;
@@ -43,6 +45,8 @@ public class ProblemInstance{
                     }
                      
                     ProblemInstance instance = new ProblemInstance(numJobs, numMachines, processingTimes);
+                    instance.lowerBound = lowerBound;
+                    instance.upperBound = upperBound;
                     instances.add(instance);
                 }
             }
@@ -54,10 +58,14 @@ public class ProblemInstance{
             e.printStackTrace();
         }
         
+        System.out.println(instances.size());
         return instances;
     }
          
     public int getNumJobs() { return numJobs; }
     public int getNumMachines() { return numMachines; }
     public int[][] getProcessingTimes() { return processingTimes; }
+    public int getUpperBound() {return upperBound;}
+    public int getLowerBound() {return lowerBound;}
+
 }

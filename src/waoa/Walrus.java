@@ -1,6 +1,6 @@
 package waoa;
 
-public class Walrus {
+public class Walrus implements Comparable<Walrus> {
 
     public double[] position;
     public double[] objectives;
@@ -28,6 +28,19 @@ public class Walrus {
         System.arraycopy(this.jobSequence, 0, copy.jobSequence, 0, this.jobSequence.length);
         System.arraycopy(this.objectives, 0, copy.objectives, 0, copy.objectives.length);
         return copy;
+    }
+
+    @Override
+    public int compareTo(Walrus o) {
+        //Menggunakan perbandingan oleh Rajendran
+        double thisMakespan = this.objectives[0];
+        double thisTotalFlow = this.objectives[1];
+        double otherMakespan = o.objectives[0];
+        double otherTotalFlow = o.objectives[1];
+        double minMakeSpan = Math.min(thisMakespan,otherMakespan);
+        double minTotalFlow = Math.min(thisTotalFlow,otherTotalFlow);
+        return Double.compare((thisMakespan-minMakeSpan)/minMakeSpan - (thisTotalFlow-minTotalFlow)/minTotalFlow
+                            , (otherMakespan-minMakeSpan)/minMakeSpan - (otherTotalFlow-minTotalFlow)/minTotalFlow) ;
     }
     
 }
